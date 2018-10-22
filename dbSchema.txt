@@ -1,0 +1,5 @@
+linkShortener.db
+
+
+CREATE TABLE links (longLink text NOT NULL, shortLink text NOT NULL, expirationDate text NOT NULL);
+
