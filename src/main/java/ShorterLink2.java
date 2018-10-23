@@ -37,6 +37,7 @@ public class ShorterLink2 {
 //            //Writing records in the form of a list
 //            csvPrinter.printRecord(Arrays.asList("Dev Bhatia", 4000,123));
             csvPrinter.flush();
+			readCSV();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -50,18 +51,13 @@ public class ShorterLink2 {
             // Accessing Values by Column Index
             String longLink = csvRecord.get(0);
             //Accessing the values by column header name
-            String shortLink = csvRecord.get("Short");
-            String expirationDate = csvRecord.get("ExpirationDate");
-            //Printing the record
-            System.out.println("Record Number - " + csvRecord.getRecordNumber());
-            System.out.println("Name : " + longLink);
-            System.out.println("Fees : " + shortLink);
-            System.out.println("Fees : " + expirationDate);
-            System.out.println("\n\n");
+            String shortLink = csvRecord.get(1);
+            String expirationDate = csvRecord.get(2);
+			insertData(longLink, shortLink, expirationDate);   
         }
     }
 
-    public boolean insertData(){
+    public boolean insertData(String longLink, String shortLink, String expirationDate){
         Connection c = null;
         Statement stmt = null;
 
@@ -73,7 +69,7 @@ public class ShorterLink2 {
 
             stmt = c.createStatement();
             String sql = "INSERT INTO links (longLink,shortLink,expirationDate) " +
-                    "VALUES (1, 'Paul', 32, 'California', 20000.00 );";
+                    "VALUES ('" + longLink + "','" + shortLink + "','" + expirationDate + "' );";
             stmt.executeUpdate(sql);
 
             stmt.close();
