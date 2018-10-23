@@ -6,18 +6,9 @@ import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
 import java.io.Writer;
-import java.util.Arrays;
 import org.apache.commons.csv.CSVPrinter;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.Writer;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.Arrays;
 import java.sql.*;
-import org.apache.commons.csv.CSVFormat;
-import org.apache.commons.csv.CSVParser;
-import org.apache.commons.csv.CSVPrinter;
+
 
 public class ShorterLink2 {
     public static void main(String[] args) {
@@ -37,45 +28,41 @@ public class ShorterLink2 {
 //            //Writing records in the form of a list
 //            csvPrinter.printRecord(Arrays.asList("Dev Bhatia", 4000,123));
             csvPrinter.flush();
+            readCSV();
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    public void readCSV() throws IOException {
-        BufferedReader reader = Files.newBufferedReader(Paths.get("student.csv"));
+    public static void readCSV() throws IOException {
+        BufferedReader reader = Files.newBufferedReader(Paths.get("src/main/java/student.csv"));
         CSVParser csvParser = new CSVParser(reader, CSVFormat.DEFAULT.withHeader("Long", "Short","ExpirationDate").withIgnoreHeaderCase().withTrim());
 
         for (CSVRecord csvRecord: csvParser) {
             // Accessing Values by Column Index
             String longLink = csvRecord.get(0);
             //Accessing the values by column header name
-            String shortLink = csvRecord.get("Short");
-            String expirationDate = csvRecord.get("ExpirationDate");
-            //Printing the record
-            System.out.println("Record Number - " + csvRecord.getRecordNumber());
-            System.out.println("Name : " + longLink);
-            System.out.println("Fees : " + shortLink);
-            System.out.println("Fees : " + expirationDate);
-            System.out.println("\n\n");
+            String shortLink = csvRecord.get(1);
+            String expirationDate = csvRecord.get(2);
+            insertData(longLink, shortLink, expirationDate);
         }
     }
 
-    public boolean insertData(){
+    public static boolean insertData(String longLink, String shortLink, String expirationDate){
         Connection c = null;
         Statement stmt = null;
 
         try {
             Class.forName("org.sqlite.JDBC");
-            c = DriverManager.getConnection("jdbc:sqlite:linkShortener.db");
+            c = DriverManager.getConnection("jdbc:sqlite:/Users/darkh0le/Downloads/linkShortener.db");
             c.setAutoCommit(false);
             System.out.println("Opened database successfully");
 
             stmt = c.createStatement();
-            String sql = "INSERT INTO links (longLink,shortLink,expirationDate) " +
-                    "VALUES (1, 'Paul', 32, 'California', 20000.00 );";
-            stmt.executeUpdate(sql);
+//            String sql = "INSERT INTO main.links (longLink,shortLink,expirationDate) " +"VALUES (" + longLink + "," + shortLink + "," + expirationDate + " );";
+            String sql = "INSERT INTO \"links\" (\"longLink\", \"shortLink\", \"expirationDate\") VALUES ('"+longLink+"', '"+shortLink+"', '"+expirationDate+"')";
 
+            stmt.executeUpdate(sql);
             stmt.close();
             c.commit();
             c.close();
@@ -87,18 +74,20 @@ public class ShorterLink2 {
         return false;
     }
 
-    public boolean selectData(String shortLink){
+    public static boolean selectData(String shortLink){
         Connection c = null;
         Statement stmt = null;
 
+
         try {
             Class.forName("org.sqlite.JDBC");
-            c = DriverManager.getConnection("jdbc:sqlite:linkShortener.db");
+            c = DriverManager.getConnection("jdbc:sqlite:/Users/darkh0le/Downloads/linkShortener.db");
             c.setAutoCommit(false);
             System.out.println("Opened database successfully");
 
             stmt = c.createStatement();
-            String sql = "SELECT * FROM links WHERE shortLink = '" + shortLink + "'";
+//            String sql = "SELECT * FROM links WHERE shortLink = '" + shortLink + "'";
+            String  sql = "select * from main.links";
             stmt.executeUpdate(sql);
 
             stmt.close();
